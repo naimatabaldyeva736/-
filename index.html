@@ -1,0 +1,242 @@
+class Calculator {
+    constructor(previousOperandElement, currentOperandElement) {
+        this.previousOperandElement = previousOperandElement;
+        this.currentOperandElement = currentOperandElement;
+        this.clear();
+    }
+
+    // Экранды баштапкы абалга келтирүү
+    clear() {
+        this.currentOperand = '0';
+        this.previousOperand = '';
+        this.operation = undefined;
+        this.resetScreen = false;
+    }
+
+    // Соңку белгини өчүрүү (Backspace үчүн)
+    delete() {
+        if (this.currentOperand === 'Ката' || this.currentOperand.length === 1) {
+            this.currentOperand = '0';
+        } else {
+            this.currentOperand = this.currentOperand.slice(0, -1);
+        }
+    }
+
+    // Сан кошуу
+    appendNumber(number) {
+        if (this.currentOperand === 'Ката') this.currentOperand = '0';
+        if (this.resetScreen) {
+            this.currentOperand = '';
+            this.resetScreen = false;
+        }
+        if (number === '.' && this.currentOperand.includes('.')) return;
+        if (this.currentOperand === '0' && number !== '.') {
+            this.currentOperand = number;
+        } else {
+            this.currentOperand += number;
+        }
+    }
+
+    // Операцияны тандоо (+, -, ×, ÷)
+    chooseOperation(operation) {
+        if (this.currentOperand === 'Ката') return;
+        if (this.currentOperand === '') return;
+        if (this.previousOperand !== '') {
+            this.compute();
+        }
+        this.operation = operation;
+        this.previousOperand = this.currentOperand + ' ' + this.getSymbol(operation);
+        this.currentOperand = '';
+    }
+
+    getSymbol(operation) {
+        switch (operation) {
+            case 'add': return '+';
+            case 'subtract': return '−';
+            case 'multiply': return '×';
+            case 'divide': return '÷';
+            default: return '';
+        }
+    }
+
+    // Эсептөөлөрдү жүргүзүү
+    compute() {
+        let computation;
+        const prev = parseFloat(this.previousOperand);
+        const current = parseFloat(this.currentOperand);
+        if (isNaN(prev) || isNaN(current)) return;
+
+        const opSymbol = this.previousOperand.slice(-1);
+
+        switch (opSymbol) {
+            case '+':
+                computation = prev + current;
+                break;
+            case '−':
+                computation = prev - current;
+                break;
+            case '×':
+                computation = prev * current;
+                break;
+            case '÷':
+                if (current === 0) {
+                    this.currentOperand = 'Ката'; // 0гө бөлүү катасы
+                    this.previousOperand = '';
+                    this.operation = undefined;
+                    return;
+                }
+                computation = prev / current;
+                break;
+            default:
+                return;
+        }
+
+        // Жыйынтыкты так чыгаруу (JavaScriptтеги бөлчөк каталарын алдын алуу үчүн)
+        this.currentOperand = Math.round(computation * 1e10) / 1e10 + '';
+        this.operation = undefined;
+        this.previousOperand = '';
+        this.resetScreen = true;
+    }
+
+    // Процент (%) эсептөө
+    percent() {
+        if (this.currentOperand === 'Ката' || this.currentOperand === '') return;
+        const current = parseFloat(this.currentOperand);
+        this.currentOperand = (current / 100).toString();
+    }
+
+    // Оң/Терс сан кылуу (+/−)
+    sign() {
+        if (this.currentOperand === 'Ката' || this.currentOperand === '0') return;
+        if (this.currentOperand.startsWith('-')) {
+            this.currentOperand = this.currentOperand.slice(1);
+        } else {
+            this.currentOperand = '-' + this.currentOperand;
+        }
+    }
+
+    // Экранды жаңылоо
+    updateDisplay() {
+        this.currentOperandElement.innerText = this.formatNumber(this.currentOperand);
+        this.previousOperandElement.innerText = this.previousOperand;
+    }
+
+    // Сандарды ирээттөө (мисалы: 1,000)
+    formatNumber(number) {
+        if (number === 'Ката') return number;
+        const parts = number.split('.');
+        const integerDigits = parseFloat(parts[0]);
+        let integerDisplay;
+        if (isNaN(integerDigits)) {
+            integerDisplay = '';
+        } else {
+            integerDisplay = integerDigits.toLocaleString('en', { maximumFractionDigits: 0 });
+        }
+        if (parts[1] != null) {
+            return `${integerDisplay}.${parts[1]}`;
+        } else {
+            return integerDisplay;
+        }
+    }
+}
+
+// Элементтерди алуу
+const previousOperandElement = document.getElementById('previous-operand');
+const currentOperandElement = document.getElementById('current-operand');
+const calculator = new Calculator(previousOperandElement, currentOperandElement);
+
+// Баскычтарды чыкылдатуу окуялары (Click Event Listeners)
+document.querySelectorAll('.btn').forEach(button => {
+    button.addEventListener('click', () => {
+        if (button.classList.contains('number')) {
+            calculator.appendNumber(button.getAttribute('data-number'));
+        } else if (button.classList.contains('operator')) {
+            calculator.chooseOperation(button.getAttribute('data-action'));
+        } else if (button.classList.contains('equals')) {
+            calculator.compute();
+        } else if (button.classList.contains('function')) {
+            const action = button.getAttribute('data-action');
+            if (action === 'clear') calculator.clear();
+            if (action === 'sign') calculator.sign();
+            if (action === 'percent') calculator.percent();
+        } else if (button.getAttribute('data-action') === 'decimal') {
+            calculator.appendNumber('.');
+        }
+        calculator.updateDisplay();
+    });
+});
+
+// Клавиатура аркылуу башкаруу (Keyboard Support)
+window.addEventListener('keydown', e => {
+    if ((e.key >= '0' && e.key <= '9') || e.key === '.') {
+        calculator.appendNumber(e.key);
+    } else if (e.key === '+') {
+        calculator.chooseOperation('add');
+    } else if (e.key === '-') {
+        calculator.chooseOperation('subtract');
+    } else if (e.key === '*') {
+        calculator.chooseOperation('multiply');
+    } elseТалаптарга толук жооп берген, заманбап минималисттик дизайндагы **Smart Calculator** веб-долбоорунун толук коду. 
+
+Бул проект үчүн үч файл түзүү керек: `index.html`, `style.css` жана `script.js`. Аларды төмөндөгүдөй түзүп, бир папкага салып иштетсеңиз калькулятор дароо толук иштеп калат.
+
+---
+
+### 1. `index.html` (Структурасы)
+
+```html
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="[https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap](https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap)" rel="stylesheet">
+</head>
+<body>
+
+    <div class="calculator-container">
+        <!-- Аталышы -->
+        <h1 class="calculator-title">Smart Calculator</h1>
+        
+        <div class="calculator">
+            <!-- Экран -->
+            <div class="display">
+                <div id="previous-operand" class="previous-operand"></div>
+                <div id="current-operand" class="current-operand">0</div>
+            </div>
+
+            <!-- Баскычтар -->
+            <div class="buttons-grid">
+                <button class="btn function" data-action="clear">AC</button>
+                <button class="btn function" data-action="sign">+/−</button>
+                <button class="btn function" data-action="percent">%</button>
+                <button class="btn operator" data-action="divide">÷</button>
+
+                <button class="btn number" data-number="7">7</button>
+                <button class="btn number" data-number="8">8</button>
+                <button class="btn number" data-number="9">9</button>
+                <button class="btn operator" data-action="multiply">×</button>
+
+                <button class="btn number" data-number="4">4</button>
+                <button class="btn number" data-number="5">5</button>
+                <button class="btn number" data-number="6">6</button>
+                <button class="btn operator" data-action="subtract">−</button>
+
+                <button class="btn number" data-number="1">1</button>
+                <button class="btn number" data-number="2">2</button>
+                <button class="btn number" data-number="3">3</button>
+                <button class="btn operator" data-action="add">+</button>
+
+                <button class="btn number zero" data-number="0">0</button>
+                <button class="btn number" data-action="decimal">.</button>
+                <button class="btn equals" data-action="calculate">=</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

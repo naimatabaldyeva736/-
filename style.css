@@ -1,0 +1,165 @@
+/* Жалпы жөндөөлөр */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f8fafc;
+}
+
+.calculator-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.calculator-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #38bdf8;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Калькулятор card формасы */
+.calculator {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    width: 340px;
+    padding: 24px;
+}
+
+/* Экран бөлүгү */
+.display {
+    background: rgba(15, 23, 42, 0.85);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: right;
+    word-break: break-all;
+    word-wrap: break-word;
+    min-height: 85px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.previous-operand {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    min-height: 20px;
+}
+
+.current-operand {
+    color: #f8fafc;
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+/* Баскычтардын сеткасы (Grid) */
+.buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+/* Баскычтардын жалпы стили */
+.btn {
+    background: rgba(51, 65, 85, 0.5);
+    border: none;
+    outline: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #f8fafc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+    background: rgba(71, 85, 105, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Сан баскычтары */
+.btn.number {
+    background: rgba(30, 41, 59, 0.9);
+}
+
+.btn.number:hover {
+    background: rgba(51, 65, 85, 0.9);
+}
+
+/* Кошумча функциялар (AC, +/-, %) */
+.btn.function {
+    background: rgba(100, 116, 139, 0.4);
+    color: #cbd5e1;
+}
+
+.btn.function:hover {
+    background: rgba(100, 116, 139, 0.7);
+}
+
+/* Операторлор (+, -, ×, ÷) */
+.btn.operator {
+    background: #0284c7;
+    color: #ffffff;
+}
+
+.btn.operator:hover {
+    background: #0369a1;
+}
+
+/* Жыйынтык (=) баскычы */
+.btn.equals {
+    background: #10b981;
+    color: #ffffff;
+}
+
+.btn.equals:hover {
+    background: #059669;
+}
+
+/* 0 баскычы эки колоннаны ээлейт */
+.btn.zero {
+    grid-column: span 2;
+}
+
+/* Responsive дизайн (Мобилдик түзмөктөр үчүн) */
+@media (max-width: 400px) {
+    .calculator {
+        width: 100%;
+        max-width: 310px;
+        padding: 16px;
+    }
+    .current-operand {
+        font-size: 1.7rem;
+    }
+    .btn {
+        padding: 14px;
+        font-size: 1rem;
+    }
+}
